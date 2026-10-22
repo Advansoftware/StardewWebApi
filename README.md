@@ -4,6 +4,19 @@ A mod for Stardew Valley that provides access to some game basic information, ac
 
 It's my first game mod, so be gentle.
 
+> **Fork do Guia do Vale:** esta versão adiciona descoberta automática na rede local via mDNS/DNS-SD (`_stardewapi._tcp`) e encaminhamento TCP para que o app Android encontre a API sem configurar URLACL. Os endpoints e os dados existentes não foram alterados.
+
+## Acesso pela rede local
+
+O servidor continua escutando em `localhost:7882` e passa a aceitar conexões dos IPs da rede local na mesma porta. O anúncio mDNS informa o endereço e a porta para clientes compatíveis.
+
+- Para testar no computador: `http://localhost:7882/api/v1/mods`
+- Para testar de outro aparelho: `http://SEU_IP_LOCAL:7882/api/v1/mods`
+- Serviço anunciado: `_stardewapi._tcp`
+- O Windows pode pedir permissão de firewall na primeira execução; permita em redes privadas.
+
+A API precisa de um save carregado para os endpoints de mundo, jogador e inventário. Use `/api/v1/mods` para verificar se o servidor está de pé sem save.
+
 ## Game Data
 
 ### Game Data Info

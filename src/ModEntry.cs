@@ -9,6 +9,7 @@ namespace StardewWebApi;
 public class ModEntry : Mod
 {
     private EventManager? _eventManager;
+    private MdnsAdvertiser? _mdns;
 
     public override void Entry(IModHelper helper)
     {
@@ -21,6 +22,18 @@ public class ModEntry : Mod
     {
         SMAPIWrapper.LogDebug("Starting web server");
         WebServer.Instance.StartWebServer();
+
+        try
+        {
+            _mdns = new MdnsAdvertiser();
+            _mdns.Start(7882);
+        }
+        catch (Exception ex)
+        {
+            SMAPIWrapper.LogWarn($"Não foi possível anunciar a API via mDNS: {ex.Message}");
+            _mdns?.Dispose();
+            _mdns = null;
+        }
 
         _eventManager = new EventManager();
     }

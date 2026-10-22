@@ -23,6 +23,7 @@ internal partial class WebServer
     public static WebServer Instance => _instance ??= new WebServer();
 
     private volatile bool _runListenLoop;
+    private LanForwarder? _lanForwarder;
 
     private readonly HttpListener _listener = new()
     {
@@ -38,11 +39,18 @@ internal partial class WebServer
     {
         _runListenLoop = true;
         Task.Run(MainLoop);
+
+        // O HttpListener fica em localhost (sem exigir URLACL). Este
+        // encaminhador abre a mesma porta nos IPs da rede local.
+        _lanForwarder = new LanForwarder();
+        _lanForwarder.Start();
     }
 
     public void StopWebServer()
     {
         _runListenLoop = false;
+        _lanForwarder?.Dispose();
+        _lanForwarder = null;
     }
 
     private void MainLoop()

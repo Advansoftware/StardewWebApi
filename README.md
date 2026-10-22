@@ -6,6 +6,12 @@ It's my first game mod, so be gentle.
 
 > **Fork do Guia do Vale:** esta versão adiciona descoberta automática na rede local via mDNS/DNS-SD (`_stardewapi._tcp`) e encaminhamento TCP para que o app Android encontre a API sem configurar URLACL. Os endpoints e os dados existentes não foram alterados.
 
+## Requisitos
+
+- Stardew Valley 1.6 no PC.
+- [SMAPI](https://github.com/Pathoschild/SMAPI/releases/latest) instalado e funcionando (testado com a 4.5.2).
+- Guia de instalação do SMAPI: <https://smapi.io/>.
+
 ## Acesso pela rede local
 
 O servidor continua escutando em `localhost:7882` e passa a aceitar conexões dos IPs da rede local na mesma porta. O anúncio mDNS informa o endereço e a porta para clientes compatíveis.

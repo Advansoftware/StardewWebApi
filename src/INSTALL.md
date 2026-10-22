@@ -5,7 +5,7 @@ Esta pasta é um mod de SMAPI. Ela não funciona sozinha.
 ## Requisitos
 
 - **Stardew Valley 1.6** no PC.
-- **SMAPI 4.5.2** instalado: https://github.com/Pathoschild/SMAPI/releases/tag/4.5.2
+- **SMAPI** instalado (testado com a 4.5.2): https://github.com/Pathoschild/SMAPI/releases/latest
 - Guia oficial de instalação do SMAPI: https://smapi.io/
 
 ## Instalação

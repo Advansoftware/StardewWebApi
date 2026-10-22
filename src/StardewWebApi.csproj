@@ -24,6 +24,9 @@
     <Copy
       SourceFiles="$(TargetDir)System.Net.IPNetwork.dll"
       DestinationFolder="$(GameModsPath)/$(ModFolderName)" />
+    <Copy
+      SourceFiles="$(MSBuildProjectDirectory)/INSTALL.md"
+      DestinationFolder="$(GameModsPath)/$(ModFolderName)" />
     <ItemGroup>
       <_ModFiles Include="$(GameModsPath)/$(ModFolderName)/**/*" />
     </ItemGroup>

@@ -1,44 +1,14 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <!-- Inclui as dependências do mDNS (Makaretu/Common.Logging) no zip. -->
-    <BundleExtraAssemblies>ThirdParty</BundleExtraAssemblies>
-    <!-- O empacotamento é feito no target PackageMod, que inclui o
-         System.Net.IPNetwork.dll (o pacote padrão ignora assemblies System.*). -->
-    <EnableModZip>false</EnableModZip>
     <Version>0.7.0</Version>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Pathoschild.Stardew.ModBuildConfig" Version="4.1.1" />
-    <PackageReference Include="Makaretu.Dns.Multicast" Version="0.27.0" />
   </ItemGroup>
-
-  <!-- O DeployModTask padrão não inclui assemblies cujo nome começa com
-       "System." (necessário para o IPNetwork2 usado pelo mDNS). Copiamos esse
-       arquivo e geramos o zip com a mesma estrutura do pacote padrão. -->
-  <Target Name="PackageMod" AfterTargets="AfterBuild" Condition="'$(EnableModDeploy)' == 'true'">
-    <Copy
-      SourceFiles="$(TargetDir)System.Net.IPNetwork.dll"
-      DestinationFolder="$(GameModsPath)/$(ModFolderName)" />
-    <Copy
-      SourceFiles="$(MSBuildProjectDirectory)/INSTALL.md"
-      DestinationFolder="$(GameModsPath)/$(ModFolderName)" />
-    <ItemGroup>
-      <_ModFiles Include="$(GameModsPath)/$(ModFolderName)/**/*" />
-    </ItemGroup>
-    <RemoveDir Directories="$(TargetDir)ziproot" />
-    <Copy
-      SourceFiles="@(_ModFiles)"
-      DestinationFiles="@(_ModFiles->'$(TargetDir)ziproot/$(ModFolderName)/%(RecursiveDir)%(Filename)%(Extension)')" />
-    <ZipDirectory
-      SourceDirectory="$(TargetDir)ziproot"
-      DestinationFile="$(TargetDir)$(ModFolderName) $(Version).zip"
-      Overwrite="true" />
-    <RemoveDir Directories="$(TargetDir)ziproot" />
-  </Target>
 
 </Project>

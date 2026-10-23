@@ -1,4 +1,4 @@
-# Stardew Web API 0.7.0 (fork do Guia do Vale)
+# Stardew Web API 0.7.1 (fork do Guia do Vale)
 
 Esta pasta é um mod de SMAPI. Ela não funciona sozinha.
 
@@ -15,12 +15,35 @@ Esta pasta é um mod de SMAPI. Ela não funciona sozinha.
    - Windows: `C:\Program Files (x86)\Steam\steamapps\common\Stardew Valley\Mods\`
    - Linux: `~/.local/share/Steam/steamapps/common/Stardew Valley/Mods/`
    - macOS: `~/Library/Application Support/Steam/steamapps/common/Stardew Valley/Contents/MacOS/Mods/`
-3. Abra o jogo pelo SMAPI e **carregue um save**.
-4. No Windows, permita o acesso do jogo em redes privadas se o firewall perguntar.
-5. Teste no PC: `http://localhost:7882/api/v1/mods`
-6. Teste de outro aparelho na mesma rede: `http://IP_DO_PC:7882/api/v1/mods`
 
-A API escuta em `localhost:7882` e também aceita conexões da rede local na porta 7882.
+### Configuração extra no Windows (obrigatória uma única vez)
+
+O mod precisa escutar na rede local. Para isso, abra o **PowerShell como Administrador**
+e execute os dois comandos abaixo:
+
+```powershell
+# 1. Permite que o HttpListener do mod use a porta 7882 em todas as interfaces
+netsh http add urlacl url=http://+:7882/ sddl=D:(A;;GX;;;WD)
+
+# 2. Libera a porta 7882 no Firewall do Windows
+netsh advfirewall firewall add rule `
+  name="Stardew Web API" `
+  dir=in `
+  action=allow `
+  protocol=TCP `
+  localport=7882
+```
+
+Esses comandos só precisam ser executados uma vez. Após isso, o mod funciona
+automaticamente sem precisar de privilégios de administrador.
+
+## Testando
+
+3. Abra o jogo pelo SMAPI e **carregue um save**.
+4. Teste no PC: `http://localhost:7882/api/v1/mods`
+5. Teste de outro aparelho na mesma rede: `http://IP_DO_PC:7882/api/v1/mods`
+
+A API escuta em `http://+:7882/` (localhost e rede local na mesma porta).
 O anúncio `_stardewapi._tcp` permite que o app Guia do Vale encontre o servidor sozinho.
 
 ## Observações

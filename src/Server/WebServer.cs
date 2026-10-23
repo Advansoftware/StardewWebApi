@@ -9,13 +9,6 @@ internal partial class WebServer
 {
     private WebServer()
     {
-        // IPv6 binding on Linux doesn't work like this, so only bind this on Windows
-        if (Environment.OSVersion.Platform == PlatformID.Win32NT
-            && System.Net.Sockets.Socket.OSSupportsIPv6)
-        {
-            _listener.Prefixes.Add("http://[::1]:7882/");
-        }
-
         CreateRouteTable();
     }
 
@@ -23,11 +16,12 @@ internal partial class WebServer
     public static WebServer Instance => _instance ??= new WebServer();
 
     private volatile bool _runListenLoop;
-    private LanForwarder? _lanForwarder;
 
-    private readonly HttpListener _listener = new()
+    // http://+:7882/ escuta em TODAS as interfaces (localhost + rede local).
+    // Requer: netsh http add urlacl url=http://+:7882/ sddl=D:(A;;GX;;;WD)
+    private HttpListener _listener = new()
     {
-        Prefixes = { "http://localhost:7882/", "http://127.0.0.1:7882/" }
+        Prefixes = { "http://+:7882/" }
     };
 
     public static readonly JsonSerializerOptions SerializerOptions = new()
@@ -39,18 +33,11 @@ internal partial class WebServer
     {
         _runListenLoop = true;
         Task.Run(MainLoop);
-
-        // O HttpListener fica em localhost (sem exigir URLACL). Este
-        // encaminhador abre a mesma porta nos IPs da rede local.
-        _lanForwarder = new LanForwarder();
-        _lanForwarder.Start();
     }
 
     public void StopWebServer()
     {
         _runListenLoop = false;
-        _lanForwarder?.Dispose();
-        _lanForwarder = null;
     }
 
     private void MainLoop()
@@ -58,10 +45,28 @@ internal partial class WebServer
         try
         {
             _listener.Start();
+            SMAPIWrapper.LogInfo("API escutando em http://+:7882/ (rede local habilitada)");
+        }
+        catch (HttpListenerException ex)
+        {
+            SMAPIWrapper.LogWarn(
+                $"Sem permissao para escutar na rede ({ex.Message}). " +
+                "Rode como admin: netsh http add urlacl url=http://+:7882/ sddl=D:(A;;GX;;;WD)  — usando apenas localhost por enquanto.");
+            try
+            {
+                _listener = new HttpListener { Prefixes = { "http://localhost:7882/" } };
+                _listener.Start();
+            }
+            catch (Exception ex2)
+            {
+                SMAPIWrapper.LogError($"Error starting web server: {ex2.Message}");
+                return;
+            }
         }
         catch (Exception ex)
         {
             SMAPIWrapper.LogError($"Error starting web server: {ex.Message}");
+            return;
         }
 
         var sem = new SemaphoreSlim(20, 20);
